@@ -1,9 +1,10 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
-using PRN232.Lab1.CoffeeStore.API.Controllers;
 using PRN232.Lab1.CoffeeStore.Repository;
 using PRN232.Lab1.CoffeeStore.Repository.DBContext;
 using PRN232.Lab1.CoffeeStore.Service;
+using PRN232.Lab1.CoffeeStore.Service.Model.Mapper;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +21,8 @@ builder.Services.AddControllers()
                     options.SerializerSettings.ReferenceLoopHandling =
                         ReferenceLoopHandling.Ignore;
                 });
+
+builder.Services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
 
 builder.Services.AddDbContext<CoffeeStore2DBContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));

@@ -36,7 +36,6 @@ public class GenericRepository<T> where T : class
     }
     public void Update(T entity)
     {
-        //// Turning off Tracking for UpdateAsync in Entity Framework
         _context.ChangeTracker.Clear();
         var tracker = _context.Attach(entity);
         tracker.State = EntityState.Modified;
@@ -45,40 +44,10 @@ public class GenericRepository<T> where T : class
 
     public async Task<int> UpdateAsync(T entity)
     {
-        //// Turning off Tracking for UpdateAsync in Entity Framework
         _context.ChangeTracker.Clear();
         var tracker = _context.Attach(entity);
         tracker.State = EntityState.Modified;
         return await _context.SaveChangesAsync();
-
-        /*
-        try
-        {
-            // Get primary key dynamically
-            var keyValues = _context.Model.FindEntityType(typeof(T))
-                            ?.FindPrimaryKey()
-                            ?.Properties
-                            ?.Select(p => p.PropertyInfo.GetValue(entity))
-                            .ToArray();
-
-            if (keyValues == null || keyValues.Length == 0)
-                throw new InvalidOperationException("No primary key defined for entity.");
-
-            // Fetch existing entity without tracking
-            var existingEntity = await _context.Set<T>().FindAsync(keyValues);
-
-            if (existingEntity == null) return 0;
-
-            _context.Entry(existingEntity).State = EntityState.Detached; // ✅ Prevent tracking conflicts
-            _context.Entry(entity).State = EntityState.Modified; // ✅ Mark for update
-
-            return await _context.SaveChangesAsync();
-        }
-        catch (Exception ex)
-        {
-            return 0;
-        }           
-         */
     }
 
     public bool Remove(T entity)
@@ -115,10 +84,6 @@ public class GenericRepository<T> where T : class
         return await _context.Set<T>().FindAsync(code);
     }
 
-    /*
-    https://guidgenerator.com/
-    daacb4fb-ff73-46ef-98f1-4af9aab2a30a
-     */
     public T GetById(Guid code)
     {
         return _context.Set<T>().Find(code);

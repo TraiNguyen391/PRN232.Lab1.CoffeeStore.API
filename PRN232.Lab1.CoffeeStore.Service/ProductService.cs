@@ -1,13 +1,20 @@
-﻿using PRN232.Lab1.CoffeeStore.Repository;
+﻿using AutoMapper;
+using PRN232.Lab1.CoffeeStore.Repository;
 using PRN232.Lab1.CoffeeStore.Repository.Models;
+using PRN232.Lab1.CoffeeStore.Service.Model.RequestModel;
 
 namespace PRN232.Lab1.CoffeeStore.Service
 {
     public class ProductService
     {
         private readonly ProductRepository _repository;
+        private readonly IMapper _mapper;
 
-        public ProductService() => _repository ??= new ProductRepository();
+        public ProductService(ProductRepository repository, IMapper mapper)
+        {
+            _mapper = mapper;
+            _repository = repository;
+        }
 
         public async Task<List<Product>> GetAllAsync()
         {
@@ -19,9 +26,10 @@ namespace PRN232.Lab1.CoffeeStore.Service
             return await _repository.GetByIdAsync(code);
         }
 
-        public async Task<int> CreateAsync(Product entity)
+        public async Task<int> CreateAsync(ProductRequestModel entity)
         {
-            return await _repository.CreateAsync(entity);
+            var product = _mapper.Map<Product>(entity);
+            return await _repository.CreateAsync(product);
         }
 
         public async Task<int> UpdateAsync(Product entity)
