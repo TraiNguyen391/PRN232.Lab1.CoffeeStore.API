@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PRN232.Lab1.CoffeeStore.Repository.Models;
+using PRN232.Lab1.CoffeeStore.Service.Implementation;
 using PRN232.Lab1.CoffeeStore.Service.Interface;
 using PRN232.Lab1.CoffeeStore.Service.Model.RequestModel;
+using PRN232.Lab1.CoffeeStore.Service.Model.ResponseModel;
 
 namespace PRN232.Lab1.CoffeeStore.API.Controllers
 {
@@ -29,11 +31,11 @@ namespace PRN232.Lab1.CoffeeStore.API.Controllers
         [HttpGet("{id}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
-        public async Task<ActionResult<Menu>> GetMenuById(int id)
+        public async Task<ActionResult<MenuResponseModel>> GetMenuById(int id)
         {
             var menu = await _context.GetByIdAsync(id);
 
-            if (menu.MenuId == 0)
+            if (menu == null)
             {
                 return NotFound();
             }
@@ -62,10 +64,15 @@ namespace PRN232.Lab1.CoffeeStore.API.Controllers
         [HttpPost]
         [ProducesResponseType(201)]
         [ProducesResponseType(400)]
-        public async Task<ActionResult<Menu>> CreateMenu(MenuRequestModel menu)
+        public async Task<IActionResult> CreateMenu([FromBody] MenuRequestModel model)
         {
-            var createdMenu = await _context.CreateAsync(menu);
-            return CreatedAtAction("CreateMenu", new { id = createdMenu }, createdMenu);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var menu = await _context.CreateAsync(model);
+            return Ok(new { Message = "Tạo menu thành công", menu });
         }
 
         // DELETE: api/Menus/5

@@ -8,13 +8,13 @@ using System.Collections.Generic;
 
 namespace PRN232.Lab1.CoffeeStore.Repository.DBContext;
 
-public partial class CoffeeStore2DBContext : DbContext
+public partial class CoffeeStoreDBContext : DbContext
 {
-    public CoffeeStore2DBContext()
+    public CoffeeStoreDBContext()
     {
     }
 
-    public CoffeeStore2DBContext(DbContextOptions<CoffeeStore2DBContext> options)
+    public CoffeeStoreDBContext(DbContextOptions<CoffeeStoreDBContext> options)
         : base(options)
     {
     }

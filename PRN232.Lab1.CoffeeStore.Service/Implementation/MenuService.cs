@@ -1,33 +1,45 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using PRN232.Lab1.CoffeeStore.Repository.Implementation;
 using PRN232.Lab1.CoffeeStore.Repository.Models;
+using PRN232.Lab1.CoffeeStore.Repository.UnitOfWork;
 using PRN232.Lab1.CoffeeStore.Service.Interface;
 using PRN232.Lab1.CoffeeStore.Service.Model.RequestModel;
+using PRN232.Lab1.CoffeeStore.Service.Model.ResponseModel;
 
 namespace PRN232.Lab1.CoffeeStore.Service.Implementation
 {
     public class MenuService : IMenuService
     {
-        private readonly MenuRepository _repository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        public MenuService(MenuRepository repository, IMapper mapper)
+        public MenuService(IUnitOfWork unitOfWork, IMapper mapper)
         {
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
-            _repository = repository;
         }
 
-        public async Task<int> CreateAsync(MenuRequestModel entity)
+        public async Task<Menu> CreateAsync(MenuRequestModel model)
         {
-            var menu = _mapper.Map<Menu>(entity);
-            return await _repository.CreateAsync(menu);
+            var menu = _mapper.Map<Menu>(model);
+
+            var productInMenus = model.Products
+                .Select(p => _mapper.Map<ProductInMenu>(p))
+                .ToList();
+
+            menu.ProductInMenus = productInMenus;
+
+            await _unitOfWork.MenuRepository.CreateAsync(menu);
+            return menu;
         }
+
 
         public async Task<bool> DeleteAsync(int code)
         {
-            var item = await _repository.GetByIdAsync(code);
+            var item = await _unitOfWork.MenuRepository.GetByIdAsync(code);
             if (item != null)
             {
-                var result = await _repository.RemoveAsync(item);
+                var result = await _unitOfWork.MenuRepository.RemoveAsync(item);
                 if (result)
                 {
                     return true;
@@ -38,23 +50,58 @@ namespace PRN232.Lab1.CoffeeStore.Service.Implementation
 
         public async Task<List<Menu>> GetAllAsync()
         {
-            return await _repository.GetAllAsync();
+            return await _unitOfWork.MenuRepository.GetAllAsync();
         }
 
-        public async Task<Menu> GetByIdAsync(int code)
+        public async Task<MenuResponseModel> GetByIdAsync(int code)
         {
             if (code <= 0)
             {
                 throw new ArgumentException("Invalid menu code");
             }
-            return await _repository.GetByIdAsync(code);
+
+            var result = await _unitOfWork.MenuRepository.GetByIdAsync(code);
+
+            return _mapper.Map<MenuResponseModel>(result);
         }
 
-        public Task<int> UpdateAsync(int id, MenuRequestModel entity)
+        public async Task<Menu> UpdateAsync(int id, MenuRequestModel request)
         {
-            var menu = _mapper.Map<Menu>(entity);
-            menu.MenuId = id;
-            return _repository.UpdateAsync(menu);
+            var existingMenu = await _unitOfWork.MenuRepository
+                .GetByIdAsync(id);
+
+            if (existingMenu == null)
+                throw new KeyNotFoundException($"Menu with id {id} not found");
+
+            // Update field cơ bản
+            existingMenu.Name = request.Name;
+            existingMenu.FromDate = request.FromDate;
+            existingMenu.ToDate = request.ToDate;
+
+            // Lấy toàn bộ ProductInMenu cũ trong DB
+            var oldProducts = existingMenu.ProductInMenus.ToList();
+
+            // Xóa hẳn trong DB
+            foreach (var old in oldProducts)
+            {
+                await _unitOfWork.ProductInMenuRepository.RemoveAsync(old);
+            }
+
+            // Add lại toàn bộ product mới
+            foreach (var prod in request.Products)
+            {
+                existingMenu.ProductInMenus.Add(new ProductInMenu
+                {
+                    ProductId = prod.ProductId,
+                    MenuId = id,
+                    Quantity = prod.Quantity
+                });
+            }
+
+            await _unitOfWork.MenuRepository.UpdateAsync(existingMenu);
+
+            return await _unitOfWork.MenuRepository.GetByIdAsync(id);
         }
+
     }
 }

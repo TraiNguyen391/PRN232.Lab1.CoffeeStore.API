@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using PRN232.Lab1.CoffeeStore.Repository;
 using PRN232.Lab1.CoffeeStore.Repository.DBContext;
 using PRN232.Lab1.CoffeeStore.Repository.Implementation;
+using PRN232.Lab1.CoffeeStore.Repository.UnitOfWork;
 using PRN232.Lab1.CoffeeStore.Service;
 using PRN232.Lab1.CoffeeStore.Service.Implementation;
 using PRN232.Lab1.CoffeeStore.Service.Interface;
@@ -26,7 +27,7 @@ builder.Services.AddControllers()
 
 builder.Services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
 
-builder.Services.AddDbContext<CoffeeStore2DBContext>(options =>
+builder.Services.AddDbContext<CoffeeStoreDBContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 //add scope for service
@@ -36,6 +37,9 @@ builder.Services.AddScoped<IMenuService, MenuService>();
 //add scope for repository
 builder.Services.AddScoped<ProductRepository>();
 builder.Services.AddScoped<MenuRepository>();
+
+//add scope for unit of work
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 var app = builder.Build();
 

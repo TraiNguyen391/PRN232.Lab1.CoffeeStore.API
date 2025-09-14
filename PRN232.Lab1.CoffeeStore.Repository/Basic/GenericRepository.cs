@@ -3,14 +3,14 @@ using PRN232.Lab1.CoffeeStore.Repository.DBContext;
 
 public class GenericRepository<T> where T : class
 {
-    protected CoffeeStore2DBContext _context;
+    protected CoffeeStoreDBContext _context;
 
     public GenericRepository()
     {
-        _context ??= new CoffeeStore2DBContext();
+        _context ??= new CoffeeStoreDBContext();
     }
 
-    public GenericRepository(CoffeeStore2DBContext context)
+    public GenericRepository(CoffeeStoreDBContext context)
     {
         _context = context;
     }

@@ -42,5 +42,14 @@ namespace PRN232.Lab1.CoffeeStore.Service.Model.RequestModel
                 );
             }
         }
+
+        public List<MenuProductRequestModel> Products { get; set; } = new();
+    }
+
+    public class MenuProductRequestModel
+    {
+        public int ProductInMenuId { get; set; }
+        public int ProductId { get; set; }
+        public int Quantity { get; set; }
     }
 }

@@ -8,7 +8,7 @@ namespace PRN232.Lab1.CoffeeStore.Repository.Implementation
     {
         public ProductRepository() { }
 
-        public ProductRepository(CoffeeStore2DBContext context) => _context = context;
+        public ProductRepository(CoffeeStoreDBContext context) => _context = context;
 
         public async Task<List<Product>> GetAllAsync()
         {
