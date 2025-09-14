@@ -5,6 +5,7 @@ using PRN232.Lab1.CoffeeStore.Repository.DBContext;
 using PRN232.Lab1.CoffeeStore.Repository.Implementation;
 using PRN232.Lab1.CoffeeStore.Service;
 using PRN232.Lab1.CoffeeStore.Service.Implementation;
+using PRN232.Lab1.CoffeeStore.Service.Interface;
 using PRN232.Lab1.CoffeeStore.Service.Model.Mapper;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -30,9 +31,11 @@ builder.Services.AddDbContext<CoffeeStore2DBContext>(options =>
 
 //add scope for service
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IMenuService, MenuService>();
 
 //add scope for repository
 builder.Services.AddScoped<ProductRepository>();
+builder.Services.AddScoped<MenuRepository>();
 
 var app = builder.Build();
 

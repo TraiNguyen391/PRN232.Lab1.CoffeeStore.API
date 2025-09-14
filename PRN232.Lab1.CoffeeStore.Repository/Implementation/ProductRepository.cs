@@ -12,7 +12,7 @@ namespace PRN232.Lab1.CoffeeStore.Repository.Implementation
 
         public async Task<List<Product>> GetAllAsync()
         {
-            var item = await _context.Products.Include(c => c.Category).ToListAsync();
+            var item = await _context.Products.ToListAsync();
             return item ?? new List<Product>();
         }
 

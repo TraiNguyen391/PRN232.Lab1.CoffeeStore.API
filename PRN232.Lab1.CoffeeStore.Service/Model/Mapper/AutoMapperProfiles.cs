@@ -10,6 +10,9 @@ namespace PRN232.Lab1.CoffeeStore.Service.Model.Mapper
         {
             CreateMap<Product, ProductRequestModel>();
             CreateMap<ProductRequestModel, Product>();
+
+            CreateMap<Menu, MenuRequestModel>();
+            CreateMap<MenuRequestModel, Menu>();
         }
     }
 }
