@@ -1,9 +1,10 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using PRN232.Lab1.CoffeeStore.Repository;
 using PRN232.Lab1.CoffeeStore.Repository.DBContext;
+using PRN232.Lab1.CoffeeStore.Repository.Implementation;
 using PRN232.Lab1.CoffeeStore.Service;
+using PRN232.Lab1.CoffeeStore.Service.Implementation;
 using PRN232.Lab1.CoffeeStore.Service.Model.Mapper;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -28,7 +29,7 @@ builder.Services.AddDbContext<CoffeeStore2DBContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 //add scope for service
-builder.Services.AddScoped<ProductService>();
+builder.Services.AddScoped<IProductService, ProductService>();
 
 //add scope for repository
 builder.Services.AddScoped<ProductRepository>();
