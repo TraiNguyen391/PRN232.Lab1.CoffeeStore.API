@@ -64,23 +64,7 @@ namespace PRN232.Lab1.CoffeeStore.Repository.UnitOfWork
         }
         public async Task<int> SaveChangeAsync()
         {
-            int result = -1;
-
-            using (var dbContext = _context.Database.BeginTransaction())
-            {
-                try
-                {
-                    result = await _context.SaveChangesAsync();
-                    dbContext.Commit();
-                }
-                catch (Exception)
-                {
-                    result = -1;
-                    dbContext.Rollback();
-                }
-            }
-
-            return result;
+            return await SaveChangeAsync();
         }
 
         public void Dispose() => _context.Dispose();

@@ -19,6 +19,7 @@ public class GenericRepository<T> where T : class
     {
         _context.Add(entity);
         return await _context.SaveChangesAsync();
+        //return 1;
     }
 
     public async Task<int> UpdateAsync(T entity)
@@ -27,6 +28,7 @@ public class GenericRepository<T> where T : class
         var tracker = _context.Attach(entity);
         tracker.State = EntityState.Modified;
         return await _context.SaveChangesAsync();
+        //return 1;
     }
 
     public async Task<bool> RemoveAsync(T entity)
