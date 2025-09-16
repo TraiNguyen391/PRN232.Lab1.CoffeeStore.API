@@ -37,6 +37,15 @@ namespace PRN232.Lab1.CoffeeStore.Service.Implementation
         public async Task<bool> DeleteAsync(int code)
         {
             var item = await _unitOfWork.MenuRepository.GetByIdAsync(code);
+
+            var oldProducts = item.ProductInMenus.ToList();
+
+            // delete all old products in menu
+            foreach (var old in oldProducts)
+            {
+                await _unitOfWork.ProductInMenuRepository.RemoveAsync(old);
+            }
+
             if (item != null)
             {
                 var result = await _unitOfWork.MenuRepository.RemoveAsync(item);
@@ -73,21 +82,21 @@ namespace PRN232.Lab1.CoffeeStore.Service.Implementation
             if (existingMenu == null)
                 throw new KeyNotFoundException($"Menu with id {id} not found");
 
-            // Update field cơ bản
+            // Update field 
             existingMenu.Name = request.Name;
             existingMenu.FromDate = request.FromDate;
             existingMenu.ToDate = request.ToDate;
 
-            // Lấy toàn bộ ProductInMenu cũ trong DB
+            // Get all old products in menu
             var oldProducts = existingMenu.ProductInMenus.ToList();
 
-            // Xóa hẳn trong DB
+            // delete all old products in menu
             foreach (var old in oldProducts)
             {
                 await _unitOfWork.ProductInMenuRepository.RemoveAsync(old);
             }
 
-            // Add lại toàn bộ product mới
+            // Add new products in menu
             foreach (var prod in request.Products)
             {
                 existingMenu.ProductInMenus.Add(new ProductInMenu
