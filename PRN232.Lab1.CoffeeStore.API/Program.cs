@@ -27,6 +27,7 @@ builder.Services.AddControllers()
 
 builder.Services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
 
+//Dbcontext
 builder.Services.AddDbContext<CoffeeStoreDBContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 

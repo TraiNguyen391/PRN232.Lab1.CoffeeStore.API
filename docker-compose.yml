@@ -1,0 +1,30 @@
+version: '3.9'
+
+services:
+  prn232.lab1.coffeestore.api:
+    image: ${DOCKER_REGISTRY-}prn232lab1coffeestoreapi
+    build:
+      context: .
+      dockerfile: PRN232.Lab1.CoffeeStore.API/Dockerfile
+    depends_on:
+      - db
+    ports:
+      - "5000:8080"
+      - "5001:8081"
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=db;Database=CoffeeStore2DB;User=sa;Password=Your_strong_password123;TrustServerCertificate=True;
+
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: coffeestore-db
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=Your_strong_password123
+    ports:
+      - "1433:1433"
+    volumes:
+      - mssql-data:/var/opt/mssql
+    restart: always
+
+volumes:
+  mssql-data:

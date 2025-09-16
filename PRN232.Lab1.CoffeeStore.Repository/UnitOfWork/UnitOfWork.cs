@@ -19,7 +19,10 @@ namespace PRN232.Lab1.CoffeeStore.Repository.UnitOfWork
         private ProductRepository _productRepository;
         private ProductInMenuRepository _productInMenuRepository;
 
-        public UnitOfWork() => _context ??= new CoffeeStoreDBContext();
+        public UnitOfWork(CoffeeStoreDBContext context)
+        {
+            _context = context;
+        }
 
         public MenuRepository MenuRepository
         {
@@ -62,9 +65,21 @@ namespace PRN232.Lab1.CoffeeStore.Repository.UnitOfWork
 
             return result;
         }
+
         public async Task<int> SaveChangeAsync()
         {
-            return await SaveChangeAsync();
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                int result = await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+                return result;
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                return -1;
+            }
         }
 
         public void Dispose() => _context.Dispose();

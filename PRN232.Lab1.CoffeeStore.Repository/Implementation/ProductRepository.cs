@@ -6,9 +6,8 @@ namespace PRN232.Lab1.CoffeeStore.Repository.Implementation
 {
     public class ProductRepository : GenericRepository<Product>
     {
-        public ProductRepository() { }
 
-        public ProductRepository(CoffeeStoreDBContext context) => _context = context;
+        public ProductRepository(CoffeeStoreDBContext context) : base(context) { }
 
         public async Task<List<Product>> GetAllAsync()
         {

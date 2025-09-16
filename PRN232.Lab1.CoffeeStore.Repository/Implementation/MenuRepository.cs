@@ -6,8 +6,7 @@ namespace PRN232.Lab1.CoffeeStore.Repository.Implementation
 {
     public class MenuRepository : GenericRepository<Menu>
     {
-        public MenuRepository() { }
-        public MenuRepository(CoffeeStoreDBContext context) => _context = context;
+        public MenuRepository(CoffeeStoreDBContext context) : base(context) { }
         public async Task<List<Menu>> GetAllAsync()
         {
             var item = await _context.Menus.ToListAsync();

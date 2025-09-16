@@ -10,13 +10,14 @@ namespace PRN232.Lab1.CoffeeStore.Repository.DBContext;
 
 public partial class CoffeeStoreDBContext : DbContext
 {
-    public CoffeeStoreDBContext()
-    {
-    }
+    //public CoffeeStoreDBContext()
+    //{
+    //}
 
     public CoffeeStoreDBContext(DbContextOptions<CoffeeStoreDBContext> options)
         : base(options)
     {
+        Database.EnsureCreated();
     }
 
     public virtual DbSet<Category> Categories { get; set; }
@@ -31,19 +32,19 @@ public partial class CoffeeStoreDBContext : DbContext
     //#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
     //        => optionsBuilder.UseSqlServer("Data Source=ONE-SELF\\ONESELF;Initial Catalog=CoffeeStore2DB;Persist Security Info=True;User ID=sa;Password=12345;Encrypt=False");
 
-    public static string GetConnectionString(string connectionStringName)
-    {
-        var config = new ConfigurationBuilder()
-            .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
-            .AddJsonFile("appsettings.json")
-            .Build();
+    //public static string GetConnectionString(string connectionStringName)
+    //{
+    //    var config = new ConfigurationBuilder()
+    //        .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
+    //        .AddJsonFile("appsettings.json")
+    //        .Build();
 
-        string connectionString = config.GetConnectionString(connectionStringName);
-        return connectionString;
-    }
+    //    string connectionString = config.GetConnectionString(connectionStringName);
+    //    return connectionString;
+    //}
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    => optionsBuilder.UseSqlServer(GetConnectionString("DefaultConnection")).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+    //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    //=> optionsBuilder.UseSqlServer(GetConnectionString("DefaultConnection")).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -106,6 +107,30 @@ public partial class CoffeeStoreDBContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_ProductInMenu_Product");
         });
+
+        // Seed Categories
+        modelBuilder.Entity<Category>().HasData(
+            new Category { CategoryId = 1, Name = "Coffee", Description = "Coffee drinks" },
+            new Category { CategoryId = 2, Name = "Tea", Description = "Tea drinks" }
+        );
+
+        // Seed Products
+        modelBuilder.Entity<Product>().HasData(
+            new Product { ProductId = 1, Name = "Espresso", Price = 2.50m, Description = "Strong coffee", CategoryId = 1 },
+            new Product { ProductId = 2, Name = "Latte", Price = 3.00m, Description = "Milk coffee", CategoryId = 1 },
+            new Product { ProductId = 3, Name = "Green Tea", Price = 2.00m, Description = "Refreshing tea", CategoryId = 2 }
+        );
+
+        // Seed Menus
+        modelBuilder.Entity<Menu>().HasData(
+            new Menu { MenuId = 1, Name = "Morning Menu", FromDate = new DateOnly(2023, 1, 1), ToDate = null }
+        );
+
+        // Seed ProductInMenu
+        modelBuilder.Entity<ProductInMenu>().HasData(
+            new ProductInMenu { ProductInMenuId = 1, ProductId = 1, MenuId = 1, Quantity = 10 },
+            new ProductInMenu { ProductInMenuId = 2, ProductId = 2, MenuId = 1, Quantity = 15 }
+        );
 
         OnModelCreatingPartial(modelBuilder);
     }
