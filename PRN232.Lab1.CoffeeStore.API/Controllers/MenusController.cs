@@ -13,12 +13,10 @@ namespace PRN232.Lab1.CoffeeStore.API.Controllers
     public class MenusController : ControllerBase
     {
         private readonly IServiceProviders _serviceProviders;
-        private readonly IUnitOfWork _unitOfWork;
 
-        public MenusController(IServiceProviders serviceProviders, IUnitOfWork unitOfWork)
+        public MenusController(IServiceProviders serviceProviders)
         {
             _serviceProviders = serviceProviders;
-            _unitOfWork = unitOfWork;
         }
 
         [HttpGet]
@@ -63,8 +61,6 @@ namespace PRN232.Lab1.CoffeeStore.API.Controllers
 
             await _serviceProviders.MenuService.UpdateAsync(id, menu);
 
-            _unitOfWork.SaveChange();
-
             var result = await _serviceProviders.MenuService.GetByIdAsync(id);
 
             return Ok(result);
@@ -82,8 +78,6 @@ namespace PRN232.Lab1.CoffeeStore.API.Controllers
             }
 
             var menu = await _serviceProviders.MenuService.CreateAsync(model);
-
-            _unitOfWork.SaveChange();
 
             return CreatedAtAction("GetMenuById", new { id = menu.MenuId }, menu);
         }
@@ -104,8 +98,6 @@ namespace PRN232.Lab1.CoffeeStore.API.Controllers
             }
 
             await _serviceProviders.MenuService.DeleteAsync(id);
-
-            _unitOfWork.SaveChange();
 
             return NoContent();
         }

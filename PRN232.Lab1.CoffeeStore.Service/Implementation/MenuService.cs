@@ -28,6 +28,7 @@ namespace PRN232.Lab1.CoffeeStore.Service.Implementation
             menu.ProductInMenus = productInMenus;
 
             await _unitOfWork.MenuRepository.CreateAsync(menu);
+            await _unitOfWork.SaveChangeAsync();
             return menu;
         }
 
@@ -49,6 +50,7 @@ namespace PRN232.Lab1.CoffeeStore.Service.Implementation
                 var result = await _unitOfWork.MenuRepository.RemoveAsync(item);
                 if (result)
                 {
+                    await _unitOfWork.SaveChangeAsync();
                     return true;
                 }
             }
@@ -105,7 +107,8 @@ namespace PRN232.Lab1.CoffeeStore.Service.Implementation
                 });
             }
 
-            return await _unitOfWork.MenuRepository.UpdateAsync(existingMenu);
+            await _unitOfWork.MenuRepository.UpdateAsync(existingMenu);
+            return await _unitOfWork.SaveChangeAsync();
         }
 
     }
