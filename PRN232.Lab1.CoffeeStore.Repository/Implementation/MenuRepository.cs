@@ -1,10 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PRN232.Lab1.CoffeeStore.Repository.DBContext;
+using PRN232.Lab1.CoffeeStore.Repository.Interface;
 using PRN232.Lab1.CoffeeStore.Repository.Models;
 
 namespace PRN232.Lab1.CoffeeStore.Repository.Implementation
 {
-    public class MenuRepository : GenericRepository<Menu>
+    public class MenuRepository : GenericRepository<Menu>, IMenuRepository
     {
         public MenuRepository(CoffeeStoreDBContext context) : base(context) { }
         public async Task<List<Menu>> GetAllAsync()

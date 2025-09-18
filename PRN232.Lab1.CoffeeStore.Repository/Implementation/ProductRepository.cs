@@ -1,10 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PRN232.Lab1.CoffeeStore.Repository.DBContext;
+using PRN232.Lab1.CoffeeStore.Repository.Interface;
 using PRN232.Lab1.CoffeeStore.Repository.Models;
 
 namespace PRN232.Lab1.CoffeeStore.Repository.Implementation
 {
-    public class ProductRepository : GenericRepository<Product>
+    public class ProductRepository : GenericRepository<Product>, IProductRepository
     {
 
         public ProductRepository(CoffeeStoreDBContext context) : base(context) { }

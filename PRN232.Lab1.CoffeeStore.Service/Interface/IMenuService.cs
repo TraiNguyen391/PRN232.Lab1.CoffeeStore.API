@@ -9,7 +9,7 @@ namespace PRN232.Lab1.CoffeeStore.Service.Interface
         Task<List<Menu>> GetAllAsync();
         Task<MenuResponseModel> GetByIdAsync(int code);
         Task<Menu> CreateAsync(MenuRequestModel entity);
-        Task<Menu> UpdateAsync(int id, MenuRequestModel entity);
+        Task<int> UpdateAsync(int id, MenuRequestModel entity);
         Task<bool> DeleteAsync(int code);
     }
 }

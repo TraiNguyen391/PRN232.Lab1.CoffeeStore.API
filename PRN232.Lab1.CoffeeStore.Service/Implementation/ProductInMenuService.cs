@@ -1,21 +1,22 @@
 ﻿using PRN232.Lab1.CoffeeStore.Repository.Implementation;
 using PRN232.Lab1.CoffeeStore.Repository.Models;
+using PRN232.Lab1.CoffeeStore.Repository.UnitOfWork;
 using PRN232.Lab1.CoffeeStore.Service.Interface;
 
 namespace PRN232.Lab1.CoffeeStore.Service.Implementation
 {
     public class ProductInMenuService : IProductInMenuService
     {
-        private readonly ProductInMenuRepository _repository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public ProductInMenuService(ProductInMenuRepository repository)
+        public ProductInMenuService(IUnitOfWork unitOfWork)
         {
-            _repository = repository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<List<ProductInMenu>> GetAllAsync()
         {
-            return await _repository.GetAllAsync();
+            return await _unitOfWork.ProductInMenuRepository.GetAllAsync();
         }
 
         public async Task<ProductInMenu> GetByIdAsync(int code)
@@ -24,7 +25,7 @@ namespace PRN232.Lab1.CoffeeStore.Service.Implementation
             {
                 throw new ArgumentException("Invalid product in menu code");
             }
-            return await _repository.GetByIdAsync(code);
+            return await _unitOfWork.ProductInMenuRepository.GetByIdAsync(code);
         }
 
     }

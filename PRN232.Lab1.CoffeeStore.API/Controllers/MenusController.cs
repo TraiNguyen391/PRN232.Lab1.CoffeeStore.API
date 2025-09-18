@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PRN232.Lab1.CoffeeStore.Repository.Models;
-using PRN232.Lab1.CoffeeStore.Service.Implementation;
+using PRN232.Lab1.CoffeeStore.Repository.UnitOfWork;
 using PRN232.Lab1.CoffeeStore.Service.Interface;
 using PRN232.Lab1.CoffeeStore.Service.Model.RequestModel;
 using PRN232.Lab1.CoffeeStore.Service.Model.ResponseModel;
+using PRN232.Lab1.CoffeeStore.Service.ServiceProviders;
 
 namespace PRN232.Lab1.CoffeeStore.API.Controllers
 {
@@ -11,19 +12,22 @@ namespace PRN232.Lab1.CoffeeStore.API.Controllers
     [ApiController]
     public class MenusController : ControllerBase
     {
-        private readonly IMenuService _context;
+        private readonly IServiceProviders _serviceProviders;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public MenusController(IMenuService context)
+        public MenusController(IServiceProviders serviceProviders, IUnitOfWork unitOfWork)
         {
-            _context = context;
+            _serviceProviders = serviceProviders;
+            _unitOfWork = unitOfWork;
         }
 
         [HttpGet]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
         public async Task<ActionResult<IEnumerable<Menu>>> GetAllMenu()
         {
-            var result = await _context.GetAllAsync();
+            var result = await _serviceProviders.MenuService.GetAllAsync();
             return Ok(result);
         }
 
@@ -31,9 +35,11 @@ namespace PRN232.Lab1.CoffeeStore.API.Controllers
         [HttpGet("{id}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
         public async Task<ActionResult<MenuResponseModel>> GetMenuById(int id)
         {
-            var menu = await _context.GetByIdAsync(id);
+            var menu = await _serviceProviders.MenuService.GetByIdAsync(id);
 
             if (menu == null)
             {
@@ -47,6 +53,7 @@ namespace PRN232.Lab1.CoffeeStore.API.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
         public async Task<IActionResult> UpdateMenu(int id, [FromBody]MenuRequestModel menu)
         {
             if (id <= 0)
@@ -54,9 +61,11 @@ namespace PRN232.Lab1.CoffeeStore.API.Controllers
                 return BadRequest();
             }
 
-            await _context.UpdateAsync(id, menu);
+            await _serviceProviders.MenuService.UpdateAsync(id, menu);
 
-            var result = await _context.GetByIdAsync(id);
+            _unitOfWork.SaveChange();
+
+            var result = await _serviceProviders.MenuService.GetByIdAsync(id);
 
             return Ok(result);
         }
@@ -64,6 +73,7 @@ namespace PRN232.Lab1.CoffeeStore.API.Controllers
         [HttpPost]
         [ProducesResponseType(201)]
         [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
         public async Task<IActionResult> CreateMenu([FromBody] MenuRequestModel model)
         {
             if (!ModelState.IsValid)
@@ -71,8 +81,11 @@ namespace PRN232.Lab1.CoffeeStore.API.Controllers
                 return BadRequest();
             }
 
-            var menu = await _context.CreateAsync(model);
-            return Ok(new { Message = "Tạo menu thành công", menu });
+            var menu = await _serviceProviders.MenuService.CreateAsync(model);
+
+            _unitOfWork.SaveChange();
+
+            return CreatedAtAction("GetMenuById", new { id = menu.MenuId }, menu);
         }
 
         // DELETE: api/Menus/5
@@ -80,16 +93,19 @@ namespace PRN232.Lab1.CoffeeStore.API.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
         [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
         public async Task<IActionResult> DeleteMenu(int id)
         {
-            var menu = await _context.GetByIdAsync(id);
+            var menu = await _serviceProviders.MenuService.GetByIdAsync(id);
 
             if (menu == null)
             {
                 return NotFound();
             }
 
-            await _context.DeleteAsync(id);
+            await _serviceProviders.MenuService.DeleteAsync(id);
+
+            _unitOfWork.SaveChange();
 
             return NoContent();
         }

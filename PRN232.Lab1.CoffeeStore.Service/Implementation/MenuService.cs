@@ -1,6 +1,4 @@
 ﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
-using PRN232.Lab1.CoffeeStore.Repository.Implementation;
 using PRN232.Lab1.CoffeeStore.Repository.Models;
 using PRN232.Lab1.CoffeeStore.Repository.UnitOfWork;
 using PRN232.Lab1.CoffeeStore.Service.Interface;
@@ -74,7 +72,7 @@ namespace PRN232.Lab1.CoffeeStore.Service.Implementation
             return _mapper.Map<MenuResponseModel>(result);
         }
 
-        public async Task<Menu> UpdateAsync(int id, MenuRequestModel request)
+        public async Task<int> UpdateAsync(int id, MenuRequestModel request)
         {
             var existingMenu = await _unitOfWork.MenuRepository
                 .GetByIdAsync(id);
@@ -107,9 +105,7 @@ namespace PRN232.Lab1.CoffeeStore.Service.Implementation
                 });
             }
 
-            await _unitOfWork.MenuRepository.UpdateAsync(existingMenu);
-
-            return await _unitOfWork.MenuRepository.GetByIdAsync(id);
+            return await _unitOfWork.MenuRepository.UpdateAsync(existingMenu);
         }
 
     }

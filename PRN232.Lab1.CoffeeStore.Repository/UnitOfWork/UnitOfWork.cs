@@ -1,11 +1,12 @@
 ﻿using PRN232.Lab1.CoffeeStore.Repository.DBContext;
 using PRN232.Lab1.CoffeeStore.Repository.Implementation;
+using PRN232.Lab1.CoffeeStore.Repository.Interface;
 
 namespace PRN232.Lab1.CoffeeStore.Repository.UnitOfWork
 {
     public interface IUnitOfWork :IDisposable
     {
-        MenuRepository MenuRepository { get; }
+        IMenuRepository MenuRepository { get; }
         ProductRepository ProductRepository { get; }
         ProductInMenuRepository ProductInMenuRepository { get; }
         int SaveChange();
@@ -15,7 +16,7 @@ namespace PRN232.Lab1.CoffeeStore.Repository.UnitOfWork
     public class UnitOfWork : IUnitOfWork
     {
         private readonly CoffeeStoreDBContext _context;
-        private MenuRepository _menuRepository;
+        private IMenuRepository _menuRepository;
         private ProductRepository _productRepository;
         private ProductInMenuRepository _productInMenuRepository;
 
@@ -24,7 +25,7 @@ namespace PRN232.Lab1.CoffeeStore.Repository.UnitOfWork
             _context = context;
         }
 
-        public MenuRepository MenuRepository
+        public IMenuRepository MenuRepository
         {
             get
             {

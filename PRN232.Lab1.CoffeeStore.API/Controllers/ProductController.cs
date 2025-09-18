@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using PRN232.Lab1.CoffeeStore.Service;
-using PRN232.Lab1.CoffeeStore.Service.Implementation;
+using PRN232.Lab1.CoffeeStore.Repository.UnitOfWork;
 using PRN232.Lab1.CoffeeStore.Service.Model.RequestModel;
+using PRN232.Lab1.CoffeeStore.Service.ServiceProviders;
 
 namespace PRN232.Lab1.CoffeeStore.API.Controllers
 {
@@ -9,11 +9,11 @@ namespace PRN232.Lab1.CoffeeStore.API.Controllers
     [ApiController]
     public class ProductController : ControllerBase
     {
-        public readonly IProductService _productService;
+        public readonly IServiceProviders _serviceProviders;
 
-        public ProductController(IProductService productService)
+        public ProductController(IServiceProviders serviceProviders)
         {
-            _productService = productService;
+            _serviceProviders = serviceProviders;
         }
 
         [HttpGet]
@@ -21,7 +21,7 @@ namespace PRN232.Lab1.CoffeeStore.API.Controllers
         [ProducesResponseType(400)]
         public async Task<IActionResult> GetAllProducts()
         {
-            var product = await _productService.GetAllAsync();
+            var product = await _serviceProviders.ProductService.GetAllAsync();
             return Ok(product);
         }
 
@@ -31,7 +31,7 @@ namespace PRN232.Lab1.CoffeeStore.API.Controllers
         [ProducesResponseType(400)]
         public async Task<IActionResult> GetProductById(int id)
         {
-            var products = await _productService.GetByIdAsync(id);
+            var products = await _serviceProviders.ProductService.GetByIdAsync(id);
             return Ok(products);
         }
 
@@ -45,7 +45,7 @@ namespace PRN232.Lab1.CoffeeStore.API.Controllers
                 return BadRequest();
             }
 
-            var createdProduct = await _productService.CreateAsync(product);
+            var createdProduct = await _serviceProviders.ProductService.CreateAsync(product);
 
             return CreatedAtAction(nameof(GetProductById), new { id = createdProduct }, createdProduct);
         }
@@ -61,16 +61,16 @@ namespace PRN232.Lab1.CoffeeStore.API.Controllers
                 return BadRequest();
             }
 
-            var existingProduct = await _productService.GetByIdAsync(id);
+            var existingProduct = await _serviceProviders.ProductService.GetByIdAsync(id);
 
             if (existingProduct == null)
             {
                 return NotFound();
             }
 
-            await _productService.UpdateAsync(id, product);
+            await _serviceProviders.ProductService.UpdateAsync(id, product);
 
-            var result = await _productService.GetByIdAsync(id);
+            var result = await _serviceProviders.ProductService.GetByIdAsync(id);
 
             if (result == null)
             {
@@ -91,14 +91,14 @@ namespace PRN232.Lab1.CoffeeStore.API.Controllers
                 return BadRequest();
             }
 
-            var existingProduct = await _productService.GetByIdAsync(id);
+            var existingProduct = await _serviceProviders.ProductService.GetByIdAsync(id);
 
             if (existingProduct == null)
             {
                 return NotFound();
             }
 
-            await _productService.DeleteAsync(id);
+            await _serviceProviders.ProductService.DeleteAsync(id);
 
             return NoContent();
         }
